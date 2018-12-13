@@ -91,7 +91,8 @@ GOTO Menu
 @"%SystemRoot%\System32\WindowsPowerShell\v1.0\powershell.exe" -NoProfile -InputFormat None -ExecutionPolicy Bypass -Command "iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))" && SET "PATH=%PATH%;%ALLUSERSPROFILE%\chocolatey\bin"
 choco install -y adobereader
 choco install -y flashplayerplugin
-choco install -y googlechrome
+choco install -y googlechrome-allusers
+REM choco install -y googlechrome
 choco install -y jre8
 choco install -y flashplayeractivex
 choco install -y firefox
@@ -146,41 +147,12 @@ for /f "tokens=*" %a in ('dir *.inf /b /s') do (pnputil –i -a "%a\..\*.inf")
 
 GOTO End_Routine
 
-
-
-
-:Install_Dell_Cab
-
-
-pause
-GOTO End_Routine
-
-
-
-:Change_Defaults
-REM The two lines below will set the default pdf viewer to Adobe Acrobat
-assoc .pdf=AcroRd32.exe
-ftype AcroRd32.exe="c:\program files (x86)\adobe\acrobat reader dc\reader\AcroRd32.exe" "%%1"
-
-REM I ran the line of code below on a computer with all default app associations up
-REM dism /online /Export-DefaultAppAssociations:"%UserProfile%\Desktop\MyDefaultAppAssociations.xml"
-REM I copied the .xml file to the shared drive
-robocopy "%DefaultAppSource%" "%DefaultAppTarget%" MyDefaultAppAssociations.xml
-
-REM This will set the current PC to use the same app associations as the .xml file (Chrome as Browser, Adobe as PDF, VLC as video and music, etc)
-REM These settings can still be changed by the user.
-dism /online /Import-DefaultAppAssociations:"%DefaultAppTarget%\MyDefaultAppAssociations.xml"
-
-GOTO End_Routine
-
-
 :Get_Dell_Drivers
 REM This will launch the dell website for the drivers for the detected model based on its serial number
 REM I was hoping for a simpler URL and there may be one such as: dell.com/drivers/SerialTag ???
 start chrome http://www.dell.com/support/home/us/en/19/product-support/servicetag/%serialnumber%/drivers http://en.community.dell.com/techcenter/enterprise-client/w/wiki/2065.dell-command-deploy-driver-packs-for-enterprise-client-os-deployment
  
 GOTO End_Routine
-
 
 :Get_PC_Info
 REM SOURCE: https://community.spiceworks.com/canonical_answer_pages/555-need-to-run-a-batch-file-on-multiple-servers
@@ -260,7 +232,6 @@ echo Service Pack: %sp%
 echo --------------------------------------------
 GOTO End_Routine
 
-
 :NOCON
 echo Error...Invalid Operating System...
 echo Error...No actions were made...
@@ -278,7 +249,6 @@ shutdown -r -t 0
 GOTO End_Routine
 
 
-
 :Rename_PC
 SET old_name=%computername%
 REM alternatively SET old_name=%hostname%
@@ -287,26 +257,9 @@ WMIC computersystem where caption='%old_name%' rename %new_name%
 GOTO End_Routine
 
 
-
-:Create_SOE_Admin
-REM prompt for masked password and store in password
-set "psCommand=powershell -Command "$pword = read-host 'Enter Password for SOE Admin' -AsSecureString ; ^
-    $BSTR=[System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($pword); ^
-        [System.Runtime.InteropServices.Marshal]::PtrToStringAuto($BSTR)""
-for /f "usebackq delims=" %%p in (`%psCommand%`) do set password=%%p
-REM ECHO %password%
-
-net user "SOE Admin" %password% /add
-net localgroup administrators "SOE Admin" /add
-
-GOTO End_Routine
-
-
 :Enable_Administrator
 REM net user [username [password | *] [options]] [/domain]
 REM control userpasswords2 to verify
-REM should I remove the SOE Admin from users?
-
 REM prompt for masked password and store in password
 set "psCommand=powershell -Command "$pword = read-host 'Enter Password for SOE Admin' -AsSecureString ; ^
     $BSTR=[System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($pword); ^
@@ -314,85 +267,6 @@ set "psCommand=powershell -Command "$pword = read-host 'Enter Password for SOE A
 for /f "usebackq delims=" %%p in (`%psCommand%`) do set password=%%p
 REM ECHO %password%
 net user Administrator %password% /active:yes
-GOTO End_Routine
-
-
-REM Set DNS … Append these DNS Suffixes
-:Set_DNS
-REM Source: https://superuser.com/questions/463096/change-dns-with-script
-SETLOCAL EnableDelayedExpansion
-SET adapterName=
-
-FOR /F "tokens=* delims=:" %%a IN ('IPCONFIG ^| FIND /I "ETHERNET ADAPTER"') DO (
-SET adapterName=%%a
-
-REM Removes "Ethernet Adapter" from the front of the adapter name
-SET adapterName=!adapterName:~17!
-
-REM Removes the colon from the end of the adapter name
-SET adapterName=!adapterName:~0,-1!
-
-netsh interface ipv4 set dns name="!adapterName!" static 192.168.8.1 primary
-netsh interface ipv4 add dns name="!adapterName!" 192.168.8.2 index=2
-)
-
-ipconfig /flushdns
-
-
-GOTO End_Routine
-
-
-REM Append DNS Suffixes
-:Append_DNS_Suffixes
-REM rams.adp.vcu.edu
-REM vcu.edu
-SETLOCAL EnableDelayedExpansion
-
-:: Input here the 1st additional suffix
-set suffix=vcu.edu
-
-:: Get existing DNS suffixes
-FOR /F "usebackq tokens=1,2* delims= " %%A in (`reg QUERY HKLM\SYSTEM\CurrentControlSet\services\Tcpip\Parameters /V SearchList ^| findstr REG_SZ`) do ( 
-    set OLD_DNS=%%C
-)
-
-:: Check if it starts with our suffix
-set OK=NO
-FOR /F "tokens=1,2* delims=," %%A in ("%OLD_DNS%") do (
-    if "%%A" == "%suffix%" set OK=YES
-)
-
-:: Add our suffix first if it's not there
-if "%OK%" == "NO" (
-    ECHO Conf KO: %OLD_DNS%
-    reg add HKLM\SYSTEM\CurrentControlSet\services\Tcpip\Parameters /V SearchList /D "%suffix%,%OLD_DNS%" /F
-) else (
-    ECHO Conf OK: %OLD_DNS%
-)
-
-:: Input here the 2nd additional suffix
-set suffix=rams.adp.vcu.edu
-
-:: Get existing DNS suffixes
-FOR /F "usebackq tokens=1,2* delims= " %%A in (`reg QUERY HKLM\SYSTEM\CurrentControlSet\services\Tcpip\Parameters /V SearchList ^| findstr REG_SZ`) do ( 
-    set OLD_DNS=%%C
-)
-
-:: Check if it starts with our suffix
-set OK=NO
-FOR /F "tokens=1,2* delims=," %%A in ("%OLD_DNS%") do (
-    if "%%A" == "%suffix%" set OK=YES
-)
-
-:: Add our suffix first if it's not there
-if "%OK%" == "NO" (
-    ECHO Conf KO: %OLD_DNS%
-    reg add HKLM\SYSTEM\CurrentControlSet\services\Tcpip\Parameters /V SearchList /D "%suffix%,%OLD_DNS%" /F
-) else (
-    ECHO Conf OK: %OLD_DNS%
-)
-
-ipconfig /flushdns
 GOTO End_Routine
 
 
