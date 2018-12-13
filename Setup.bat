@@ -73,10 +73,6 @@ IF %number%==19 GOTO Get_Dell_Drivers
 IF %number%==22 GOTO Windows_Updates 
 
 IF %number%==1 GOTO Restart_Windows
-IF %number%==2 GOTO Uninstall_Sophos 
-IF %number%==3 GOTO Fix_MS_Office_2016
-IF %number%==4 GOTO SPSS_License
-IF %number%==5 GOTO Forget_VCU_Wifi
 IF %number%==6 GOTO Install_Dell_Cab
 IF %number%==7 GOTO Install_Chocolatey
 IF %number%==x GOTO Menu
@@ -90,8 +86,6 @@ REM rundll32.exe cmdext.dll,MessageBeepStub
 
 PAUSE
 GOTO Menu
-
-
 
 :Install_Chocolatey
 @"%SystemRoot%\System32\WindowsPowerShell\v1.0\powershell.exe" -NoProfile -InputFormat None -ExecutionPolicy Bypass -Command "iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))" && SET "PATH=%PATH%;%ALLUSERSPROFILE%\chocolatey\bin"
@@ -139,15 +133,6 @@ REM choco install makemkv
 
 GOTO End_Routine
 
-
-:Install_Zoom
-robocopy "%ZoomSource%" "%ZoomTarget%" ZoomInstallerFull.msi
-cd %ZoomTarget%
-msiexec /i ZoomInstallerFull.msi /quiet /qn /norestart /log install.log ZoomAutoUpdate="true" ZSSOHOST="vcu.zoom.us" ZConfig="nogoogle=1;nofacebook=1;login_domain=vcu.edu;AddFWException=1;kCmdParam_InstallOption=8"
-GOTO End_Routine
-
-
-
 :Install_Dell_Cab
 ECHO With the introduction of Windows Vista, Windows will not prompt the "Found New Hardware" Wizard 
 ECHO any longer and the installation occurs silently. The end user will only see Windows UA prompts 
@@ -164,221 +149,12 @@ GOTO End_Routine
 
 
 
-:Forget_VCU_Wifi
-netsh wlan delete profile name="VCU SafeNet Wireless"
-
-GOTO End_Routine
-
-
 :Install_Dell_Cab
 
 
 pause
 GOTO End_Routine
 
-
-:Uninstall_Sophos
-REM Modifying Services
-
-net stop "Sophos Agent" >NUL 2>&1
-net stop "Sophos Anti-Virus" >NUL 2>&1
-net stop "Sophos Anti-Virus status reporter" >NUL 2>&1
-net stop "Sophos AutoUpdate Service" >NUL 2>&1
-net stop "Sophos Message Router" >NUL 2>&1
-net stop "Sophos Web Intelligence Service" >NUL 2>&1
-net stop "Sophos Client Firewall" >NUL 2>&1
-net stop "Sophos Client Firewall Manager" >NUL 2>&1
-net stop "Sophos Web Control Service" >NUL 2>&1
-sc config sharedaccess start= disabled >NUL 2>&1
-sc config browser start= auto >NUL 2>&1
-sc config remoteregistry start= auto >NUL 2>&1
-sc config lanmanserver start= auto >NUL 2>&1
-sc config schedule start= auto >NUL 2>&1
-sc config msiserver start= auto >NUL 2>&1
-sc config lanmanworkstation start= auto >NUL 2>&1
-net stop sharedaccess >NUL 2>&1
-net start lanmanworkstation >NUL 2>&1
-net start msiserver >NUL 2>&1
-net start schedule >NUL 2>&1
-net start lanmanserver >NUL 2>&1
-net start remoteregistry >NUL 2>&1
-net start browser >NUL 2>&1
-
-REM Performing MSI Uninstall
-msiexec.exe /x "c:\program files\sophos\autoupdate\cache\savxp\sophos anti-virus.msi" /q /norestart >NUL 2>&1
-msiexec.exe /x "c:\program files\sophos\autoupdate\cache\rms\sophos remote management system.msi" /q /norestart >NUL 2>&1
-msiexec.exe /x "c:\program files\sophos\autoupdate\cache\sau\sophos autoupdate.msi" /q /norestart >NUL 2>&1
-msiexec.exe /x "c:\program files\sophos\autoupdate\cache\scf\sophos client firewall.msi" /q /norestart >NUL 2>&1
-reg delete HKLM\Software\Sophos /f >NUL 2>&1
-reg delete HKCU\Software\Sophos /f >NUL 2>&1
-reg delete "HKLM\SYSTEM\CurrentControlSet\Services\Sophos Agent" /f >NUL 2>&1
-reg delete "HKLM\SYSTEM\CurrentControlSet\Services\SavService" /f >NUL 2>&1
-reg delete "HKLM\SYSTEM\CurrentControlSet\Services\SAVAdminService" /f >NUL 2>&1
-reg delete "HKLM\SYSTEM\CurrentControlSet\Services\Sophos AutoUpdate Agent" /f >NUL 2>&1
-reg delete "HKLM\SYSTEM\CurrentControlSet\Services\Sophos AutoUpdate Service" /f >NUL 2>&1
-reg delete "HKLM\SYSTEM\CurrentControlSet\Services\Sophos Certification Manager" /f >NUL 2>&1
-reg delete "HKLM\SYSTEM\CurrentControlSet\Services\Sophos EMLib Update Agent" /f >NUL 2>&1
-reg delete "HKLM\SYSTEM\CurrentControlSet\Services\SEMscheduler" /f >NUL 2>&1
-reg delete "HKLM\SYSTEM\CurrentControlSet\Services\Sophos Management Service" /f >NUL 2>&1
-reg delete "HKLM\SYSTEM\CurrentControlSet\Services\Sophos Message Router" /f >NUL 2>&1
-reg delete "HKLM\SYSTEM\CurrentControlSet\Services\SQLAgent$SOPHOS" /f >NUL 2>&1
-reg delete "HKLM\SYSTEM\CurrentControlSet\Services\MSSQL$SOPHOS" /f >NUL 2>&1
-reg delete "HKLM\System\CurrentControlSet\Services\Eventlog\Sophos" /f >NUL 2>&1
-reg delete "HKEY_CLASSES_ROOT\ISPSheet" /f >NUL 2>&1
-reg delete "HKEY_CLASSES_ROOT\ISPSheet.1" /f >NUL 2>&1
-reg delete "HKEY_LOCAL_MACHINE\SOFTWARE\Classes\AppID\{061CC07B-BA7A-44D1-81FA-D36BE1CE55D9}" /f >NUL 2>&1
-TASKKILL /F /IM "Almon.exe" >NUL 2>&1
-TASKKILL /F /IM "swc_service.exe" >NUL 2>&1
-
-REM Uninstall Sophos Network Threat Protection
-MsiExec.exe /X {66967E5F-43E8-4402-87A4-04685EE5C2CB} /qn REBOOT=SUPPRESS /L*v %windir%\Logs\Uninstall_NTP_Log.txt
-
-REM Uninstall Sophos System Protection
-MsiExec.exe /X {1093B57D-A613-47F3-90CF-0FD5C5DCFFE6} /qn REBOOT=SUPPRESS /L*v %windir%\Logs\Uninstall_SSP_Log.txt
-
-REM Uninstall Sophos Anti-Virus
-MsiExec.exe /X {65323B2D-83D4-470D-A209-D769DB30BBDB} /qn REBOOT=SUPPRESS /L*v %windir%\Logs\Uninstall_SAV_Log.txt
-MsiExec.exe /X {D929B3B5-56C6-46CC-B3A3-A1A784CBB8E4} /qn REBOOT=SUPPRESS /L*v %windir%\Logs\Uninstall_SAV_Log.txt
-MsiExec.exe /X {09863DA9-7A9B-4430-9561-E04D178D7017} /qn REBOOT=SUPPRESS /L*v %windir%\Logs\Uninstall_SAV_Log.txt
-MsiExec.exe /X {CA3CE456-B2D9-4812-8C69-17D6980432EF} /qn REBOOT=SUPPRESS /L*v %windir%\Logs\Uninstall_SAV_Log.txt
-
-REM Uninstall Sophos Remote Management System
-MsiExec.exe /X {FED1005D-CBC8-45D5-A288-FFC7BB304121} /qn REBOOT=SUPPRESS /L*v %windir%\Logs\Uninstall_RMS_Log.txt
-
-REM Uninstall Sophos AutoUpdate
-MsiExec.exe /X {AFBCA1B9-496C-4AE6-98AE-3EA1CFF65C54} /qn REBOOT=SUPPRESS /L*v %windir%\Logs\Uninstall_SAU_Log.txt
-
-REM Uninstall Sophos Endpoint Defense
-"C:\Program Files\Sophos\Endpoint Defense\uninstall.exe" /S REBOOT=SUPPRESS /L*v %windir%\Logs\Uninstall_SED_Log.txt
-
-REM y | rd /s "C:\Program Files\Sophos\"
-REM y | rd /s "C:\Program Files (x86)\Sophos\"
-REM y | rd /s "C:\Documents and Settings\All Users\Application Data\Sophos\"
-REM y | rd /s "C:\ProgramData\Sophos\"
-
-WMIC product where "Name LIKE '%%sophos%%'" call uninstall /nointeractive
-
-REM y | rd /s "C:\Program Files\Sophos\"
-REM y | rd /s "C:\Program Files (x86)\Sophos\"
-REM y | rd /s "C:\Documents and Settings\All Users\Application Data\Sophos\"
-REM y | rd /s "C:\ProgramData\Sophos\"
-
-cd C:\Program Files (x86)\Sophos\Sophos Anti-Virus
-rename sophos_detoured.dll sophos_detoured.old.dll
-rename sophos_detoured_x64.dll sophos_detoured_x64.old.dll
-
-REM Performing Registry Cleanup
-reg delete HKLM\Software\Sophos /f >NUL 2>&1
-reg delete HKCU\Software\Sophos /f >NUL 2>&1
-reg delete "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Windows\AppInit_DLLs" /f >NUL 2>&1
-reg delete "HKLM\SYSTEM\CurrentControlSet\Services\Sophos Agent" /f >NUL 2>&1
-reg delete "HKLM\SYSTEM\CurrentControlSet\Services\SavService" /f >NUL 2>&1
-reg delete "HKLM\SYSTEM\CurrentControlSet\Services\SAVAdminService" /f >NUL 2>&1
-reg delete "HKLM\SYSTEM\CurrentControlSet\Services\Sophos AutoUpdate Agent" /f >NUL 2>&1
-reg delete "HKLM\SYSTEM\CurrentControlSet\Services\Sophos AutoUpdate Service" /f >NUL 2>&1
-reg delete "HKLM\SYSTEM\CurrentControlSet\Services\Sophos Certification Manager" /f >NUL 2>&1
-reg delete "HKLM\SYSTEM\CurrentControlSet\Services\Sophos EMLib Update Agent" /f >NUL 2>&1
-reg delete "HKLM\SYSTEM\CurrentControlSet\Services\SEMscheduler" /f >NUL 2>&1
-reg delete "HKLM\SYSTEM\CurrentControlSet\Services\Sophos Management Service" /f >NUL 2>&1
-reg delete "HKLM\SYSTEM\CurrentControlSet\Services\Sophos Message Router" /f >NUL 2>&1
-reg delete "HKLM\SYSTEM\CurrentControlSet\Services\SQLAgent$SOPHOS" /f >NUL 2>&1
-reg delete "HKLM\SYSTEM\CurrentControlSet\Services\MSSQL$SOPHOS" /f >NUL 2>&1
-reg delete "HKLM\System\CurrentControlSet\Services\Eventlog\Sophos" /f >NUL 2>&1
-reg delete "HKEY_CLASSES_ROOT\ISPSheet" /f >NUL 2>&1
-reg delete "HKEY_CLASSES_ROOT\ISPSheet.1" /f >NUL 2>&1
-reg delete "HKEY_LOCAL_MACHINE\SOFTWARE\Classes\AppID\{061CC07B-BA7A-44D1-81FA-D36BE1CE55D9}" /f >NUL 2>&1
-
-SC create SopReg binpath= "cmd /K START /WAIT REGEDIT /S %TEMP%\SOTMP.REG" type= own type= interact >NUL 2>&1 >NUL
-sc start "SopReg" >NUL 2>&1 >NUL
-sc delete "SopReg" >NUL 2>&1 >NUL
-
-REM Deleting Sophos Services
-sc delete SAVService >NUL 2>&1
-sc delete SAVAdminService >NUL 2>&1
-sc delete "Sophos Agent" >NUL 2>&1
-sc delete "Sophos AutoUpdate Agent" >NUL 2>&1
-sc delete "Sophos AutoUpdate Service" >NUL 2>&1
-sc delete "Sophos Message Router" >NUL 2>&1
-sc delete "swi_service" >NUL 2>&1
-sc delete "Sophos Client Firewall" >NUL 2>&1
-sc delete "Sophos Client Firewall Manager" >NUL 2>&1
-sc delete "Sophos Web Control Service" >NUL 2>&1
-sc delete "Sophos Device Control Service" >NUL 2>&1
-sc delete swi_update_64 >NUL 2>&1
-
-REM Unregistering DLLs
-regsvr32 /u /s "%PROGRAMFILES%\Sophos\Sophos Anti-Virus\backgroundscanning.dll" >NUL 2>&1
-regsvr32 /u /s "%PROGRAMFILES%\Sophos\Sophos Anti-Virus\componentmanager.dll" >NUL 2>&1
-regsvr32 /u /s "%PROGRAMFILES%\Sophos\Sophos Anti-Virus\configuration.dll" >NUL 2>&1
-regsvr32 /u /s "%PROGRAMFILES%\Sophos\Sophos Anti-Virus\desktopmessaging.dll" >NUL 2>&1
-regsvr32 /u /s "%PROGRAMFILES%\Sophos\Sophos Anti-Virus\driveprocessor.dll" >NUL 2>&1
-regsvr32 /u /s "%PROGRAMFILES%\Sophos\Sophos Anti-Virus\eeconsumer.dll" >NUL 2>&1
-regsvr32 /u /s "%PROGRAMFILES%\Sophos\Sophos Anti-Virus\filterprocessors.dll" >NUL 2>&1
-regsvr32 /u /s "%PROGRAMFILES%\Sophos\Sophos Anti-Virus\fsdecomposer.dll" >NUL 2>&1
-regsvr32 /u /s "%PROGRAMFILES%\Sophos\Sophos Anti-Virus\icadapter.dll" >NUL 2>&1
-regsvr32 /u /s "%PROGRAMFILES%\Sophos\Sophos Anti-Virus\icmanagement.dll" >NUL 2>&1
-regsvr32 /u /s "%PROGRAMFILES%\Sophos\Sophos Anti-Virus\icprocessors.dll" >NUL 2>&1
-regsvr32 /u /s "%PROGRAMFILES%\Sophos\Sophos Anti-Virus\legacyconsumers.dll" >NUL 2>&1
-regsvr32 /u /s "%PROGRAMFILES%\Sophos\Sophos Anti-Virus\localisation.dll" >NUL 2>&1
-regsvr32 /u /s "%PROGRAMFILES%\Sophos\Sophos Anti-Virus\logging.dll" >NUL 2>&1
-regsvr32 /u /s "%PROGRAMFILES%\Sophos\Sophos Anti-Virus\persistance.dll" >NUL 2>&1
-regsvr32 /u /s "%PROGRAMFILES%\Sophos\Sophos Anti-Virus\SAVI0.dll" >NUL 2>&1
-regsvr32 /u /s "%PROGRAMFILES%\Sophos\Sophos Anti-Virus\SAVMSCM.DLL" >NUL 2>&1
-regsvr32 /u /s "%PROGRAMFILES%\Sophos\Sophos Anti-Virus\savshellext.dll" >NUL 2>&1
-regsvr32 /u /s "%PROGRAMFILES%\Sophos\Sophos Anti-Virus\scaneditexports.dll" >NUL 2>&1
-regsvr32 /u /s "%PROGRAMFILES%\Sophos\Sophos Anti-Virus\scaneditfacade.dll" >NUL 2>&1
-regsvr32 /u /s "%PROGRAMFILES%\Sophos\Sophos Anti-Virus\scanmanagement.dll" >NUL 2>&1
-regsvr32 /u /s "%PROGRAMFILES%\Sophos\Sophos Anti-Virus\security.dll" >NUL 2>&1
-regsvr32 /u /s "%PROGRAMFILES%\Sophos\Sophos Anti-Virus\sophtaineradapter.dll" >NUL 2>&1
-regsvr32 /u /s "%PROGRAMFILES%\Sophos\Sophos Anti-Virus\systeminformation.dll" >NUL 2>&1
-regsvr32 /u /s "%PROGRAMFILES%\Sophos\Sophos Anti-Virus\threatdetection.dll" >NUL 2>&1
-regsvr32 /u /s "%PROGRAMFILES%\Sophos\Sophos Anti-Virus\threatmanagement.dll" >NUL 2>&1
-regsvr32 /u /s "%PROGRAMFILES%\Sophos\Sophos Anti-Virus\translators.dll" >NUL 2>&1
-regsvr32 /u /s "%PROGRAMFILES%\Sophos\Sophos Anti-Virus\virusdetection.dll" >NUL 2>&1
-regsvr32 /u /s "%PROGRAMFILES%\Sophos\AutoUpdate\cidsync.dll" >NUL 2>&1
-regsvr32 /u /s "%PROGRAMFILES%\Sophos\AutoUpdate\config.dll" >NUL 2>&1
-regsvr32 /u /s "%PROGRAMFILES%\Sophos\AutoUpdate\inetconn.dll" >NUL 2>&1
-regsvr32 /u /s "%PROGRAMFILES%\Sophos\AutoUpdate\InstlMgr.dll" >NUL 2>&1
-regsvr32 /u /s "%PROGRAMFILES%\Sophos\AutoUpdate\ispsheet.dll" >NUL 2>&1
-regsvr32 /u /s "%PROGRAMFILES%\Sophos\AutoUpdate\logger.dll" >NUL 2>&1
-
-REM Removing the Sophos Installation Files
-RD /s /Q %TEMP% >NUL 2>&1
-MD %TEMP% >NUL 2>&1
-RD /s /Q %WINDIR%\TEMP\ >NUL 2>&1
-MD %WINDIR%\Temp >NUL 2>&1
-RD /S /Q "%PROGRAMFILES%\SOPHOS\AutoUpdate" >NUL 2>&1
-RD /S /Q "%PROGRAMFILES%\SOPHOS\Sophos Anti-Virus" >NUL 2>&1
-RD /S /Q "%PROGRAMFILES%\SOPHOS\Remote Management System" >NUL 2>&1
-RD /S /Q "%PROGRAMFILES%\SOPHOS\" >NUL 2>&1
-RD /S /Q "C:\SAVXPSA" >NUL 2>&1
-RD /s /Q "%ALLUSERSPROFILE%\Start Menu\Programs\Sophos" >NUL 2>&1
-RD /S /Q "%ALLUSERSPROFILE%\Application Data\Sophos" >NUL 2>&1
-RD /S /Q "%USERPROFILE%\Application Data\Sophos" >NUL 2>&1
-DEL /Q "%ALLUSERSPROFILE%\Start Menu\Programs\Startup\AutoUpdate Monitor.lnk" >NUL 2>&1
-RD /S /Q "%WINDIR%\Installer\{09C6BF52-6DBA-4A97-9939-B6C24E4738BF}" >NUL 2>&1
-RD /S /Q "%WINDIR%\Installer\{15C418EB-7675-42be-B2B3-281952DA014D}" >NUL 2>&1
-RD /S /Q "%WINDIR%\Installer\{C12953C2-4F15-4A6C-91BC-511B96AE2775}" >NUL 2>&1
-RD /S /Q "%WINDIR%\Installer\{FF11005D-CBC8-45D5-A288-25C7BB304121}" >NUL 2>&1
-RD /S /Q "%WINDIR%\Installer\{387EF71D-9F19-4059-B6E5-B29E521AF040}" >NUL 2>&1
-DEL /Q "%WINDIR%\System32\Drivers\savonaccesscontrol. sys" >NUL 2>&1
-DEL /Q "%WINDIR%\System32\Drivers\savonaccessfilter.s ys" >NUL 2>&1
-IF EXIST "C:\Program Files\Sophos" rmdir "C:\Program Files\Sophos" /s /q >NUL 2>&1
-IF EXIST "C:\Program Files (x86)\Sophos" rmdir "C:\Program Files (x86)\Sophos" /s /q >NUL 2>&1
-REM.
-REM Done
-
-GOTO DONE
-
-
-:DONE
-REM.
-REM ====================================================
-REM All done!
-REM ====================================================
-REM.
-
-GOTO End_Routine 
 
 
 :Change_Defaults
