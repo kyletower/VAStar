@@ -72,7 +72,7 @@ GOTO Menu
 
 
 :Add_HCPS_Proxy
-start cmd.exe /K "%userprofile%\downloads\VAStar-master\Install_HCPS_Certificates.bat"
+start cmd.exe /K "%userprofile%\downloads\VAStar-master\VAStar-master\Install_HCPS_Certificates.bat"
 GOTO End_Routine
 
 
