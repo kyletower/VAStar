@@ -67,7 +67,6 @@ IF %number%==x EXIT /B 0
 REM 
 rundll32 user32.dll,MessageBeep
 REM rundll32.exe cmdext.dll,MessageBeepStub
-
 PAUSE
 GOTO Menu
 
@@ -106,7 +105,6 @@ REM choco install pstools
 REM choco install psexec
 REM choco install teracopy
 REM choco install sudo
-
 REM choco install zotero-standalone
 REM choco install nsis
 REM choco install googlechrome-allusers
@@ -115,28 +113,27 @@ REM choco install kodi
 REM choco install autoit
 REM choco install discord
 REM choco install makemkv
-
 GOTO End_Routine
+
 
 :Install_Dell_Cab
 ECHO With the introduction of Windows Vista, Windows will not prompt the "Found New Hardware" Wizard 
 ECHO any longer and the installation occurs silently. The end user will only see Windows UA prompts 
 ECHO for unsigned driver. Total runtime ~ 10 - 15 minutes depending on number of driver in the CAB file.
-
 cd /
 md Drivers
 expand "%userprofile%\downloads\*.CAB" c:\Drivers -f:*
 cd Drivers
 for /f "tokens=*" %a in ('dir *.inf /b /s') do (pnputil –i -a "%a\..\*.inf")
-
 GOTO End_Routine
+
 
 :Get_Dell_Drivers
 REM This will launch the dell website for the drivers for the detected model based on its serial number
 REM I was hoping for a simpler URL and there may be one such as: dell.com/drivers/SerialTag ???
 start chrome http://www.dell.com/support/home/us/en/19/product-support/servicetag/%serialnumber%/drivers http://en.community.dell.com/techcenter/enterprise-client/w/wiki/2065.dell-command-deploy-driver-packs-for-enterprise-client-os-deployment
- 
 GOTO End_Routine
+
 
 :Get_PC_Info
 REM SOURCE: https://community.spiceworks.com/canonical_answer_pages/555-need-to-run-a-batch-file-on-multiple-servers
@@ -198,7 +195,6 @@ FOR /f "tokens=1*delims=:" %%i IN ('fsutil volume diskfree %volume%') DO (
 )
 FOR /f "tokens=1,2" %%i IN ("%disktotal% %diskavail%") DO SET "disktotal=%%i"& SET "diskavail=%%j"
 
-
 echo done!
 
 echo --------------------------------------------
@@ -241,23 +237,9 @@ WMIC computersystem where caption='%old_name%' rename %new_name%
 GOTO End_Routine
 
 
-:Enable_Administrator
-REM net user [username [password | *] [options]] [/domain]
-REM control userpasswords2 to verify
-REM prompt for masked password and store in password
-set "psCommand=powershell -Command "$pword = read-host 'Enter Password for SOE Admin' -AsSecureString ; ^
-    $BSTR=[System.Runtime.InteropServices.Marshal]::SecureStringToBSTR($pword); ^
-        [System.Runtime.InteropServices.Marshal]::PtrToStringAuto($BSTR)""
-for /f "usebackq delims=" %%p in (`%psCommand%`) do set password=%%p
-REM ECHO %password%
-net user Administrator %password% /active:yes
-GOTO End_Routine
-
-
 REM Uninstall pre-installed software, MS Office, McAfee, Dell Digital, Get Office, OneDrive, Netflix, News, Sketchbook, Skype Preview, Spotify
 REM appwiz.cpl
 :Uninstall_Software
-
 @rem NOW JUST SOME TWEAKS
 REM *** Show hidden files in Explorer ***
 reg add "HKEY_CURRENT_USER\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced" /v "Hidden" /t REG_DWORD /d 1 /f
@@ -306,7 +288,6 @@ REM PowerShell -Command "Get-appxprovisionedpackage –online | where-object {$_
 
 REM  5. To Remove All Apps except Store from All Current Accounts on PC
 REM PowerShell -Command "Get-AppxPackage -AllUsers | where-object {$_.name –notlike “*store*”} | Remove-AppxPackage"
-
 
 @rem *** Disable Some Service ***
 sc stop DiagTrack
@@ -383,7 +364,6 @@ reg add "HKEY_CURRENT_USER\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Ad
 REM *** Disable Suggestions in the Start Menu ***
 reg add "HKEY_CURRENT_USER\SOFTWARE\Microsoft\Windows\CurrentVersion\ContentDeliveryManager" /v "SystemPaneSuggestionsEnabled" /t REG_DWORD /d 0 /f 
 
-
 @rem Remove Apps
 REM To remove all apps except store from current user
 
@@ -396,7 +376,6 @@ REM PowerShell -Command "Get-appxpackage | where-object {$_.name -notlike '*stor
 REM PowerShell -Command "Get-appxprovisionedpackage -online | where-object {$_.packagename -notlike '*store*'} | remove-appxprovisionedpackage -online"
 
 REM OTHER Apps
-
 ECHO Removing AdobePhotoshopExpress
 PowerShell -Command "Get-AppxPackage -AllUsers *AdobeSystemsIncorporated.AdobePhotoshopExpress* | Remove-AppxPackage"
 PowerShell -Command "Get-AppxProvisionedPackage -online | where-object {$_.packagename -like '*AdobeSystemsIncorporated.AdobePhotoshopExpress*'} | Remove-AppxProvisionedPackage -online"
@@ -481,8 +460,6 @@ ECHO Removing Disney Magic Kingdoms
 PowerShell -Command "Get-AppxPackage -AllUsers *Disney* | Remove-AppxPackage"
 PowerShell -Command "Get-appxprovisionedpackage -online | where-object {$_.packagename -like '*Disney*'} | remove-appxprovisionedpackage -online"
 
-
-
 REM wmic product get name
 ECHO This will attempt to remove additional unnecessary software.
 ECHO You may see the message No Instance(s) Available. 
@@ -530,7 +507,6 @@ ECHO Launching Add/Remove Programs...
 appwiz.cpl
 
 REM https://stackoverflow.com/questions/20861432/batch-file-to-uninstall-a-program
-
 GOTO End_Routine
 
 
@@ -552,13 +528,6 @@ ECHO Launching Chrome
 start chrome.exe "https://chrome.google.com/webstore/detail/cfhdojbkjhnklbpkdaibdccddilifddb"
 REM start ms-settings:defaultapps
 GOTO End_Routine
-
-
-:Disable_Administrator
-REM net user administrator /active:no
-net user administrator /active:no
-GOTO End_Routine
-
 
 :Windows_Updates
 wuauclt.exe /detectnow /updatenow
