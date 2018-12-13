@@ -2,9 +2,6 @@
 title %computername%
 ECHO Created by Kyle Tower.
 
-REM ECHO Disabling UAC for this account. Requires reboot to be in effect.
-REM reg.exe ADD HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System /v EnableLUA /t REG_DWORD /d 0 /f
-
 REM Get Serial Number for use with Loading Dell.com/Drivers/SerialTag
 FOR /F "tokens=2 delims='='" %%A in ('wmic Bios Get SerialNumber /value') do SET serialnumber=%%A
 ECHO Serial Number is %serialnumber%
@@ -14,11 +11,11 @@ REM powershell -command "& {&'some-command' someParam}"; "& {&'some-command' -Sp
 
 :Prep_PowerShell
 PowerShell -command "Set-ExecutionPolicy Unrestricted -Scope CurrentUser"; 
-
 GOTO End_Routine
 
-
-REM MAIN
+REM ------------
+REM --- MAIN ---
+REM ------------
 GOTO Menu
 
 REM Display Menu
@@ -34,49 +31,36 @@ ECHO.
 ECHO   0.  Get PC Info
 ECHO   1.  Rename PC
 ECHO   2.  Uninstall Unnecessary Pre-Installed Software and Apps
-ECHO   3.  
-ECHO   4.  
-ECHO   5.  
-ECHO   6.  
-ECHO   15. Configure Firefox for Adblock Plus and Flash
-ECHO   16. Configure Chrome for Adblock Plus
-ECHO   17. Change Default App Associations [for new users and profiles]
-ECHO   18. Device Manager: Ensure All Devices Have Drivers
-ECHO   19. Get Dell Drivers
-ECHO   22. Windows Updates
-ECHO   6.  Install Dell Driver's via .cab file
-ECHO   7.  Install Chocolatey
+ECHO   3.  Add HCPS Proxy Certificates
+ECHO   4.  Install Chocolatey with Chrome, Firefox, Adobe, etc
+ECHO   5.  Configure Chrome for Adblock Plus
+ECHO   6.  Configure Firefox for Adblock Plus and Flash
+ECHO   7.  Get Dell Drivers
+ECHO   8.  Install Dell Driver's via .cab file
+ECHO   9.  Device Manager: Ensure All Devices Have Drivers
+ECHO  10.  Windows Updates
 ECHO.
-ECHO   NOTES:
-ECHO   Full Scan of HDD chkdsk c: /r
-ECHO   dism /online /cleanup-image /restorehealth
-ECHO   sfc /scannow
-ECHO   Empty ALL Recycle Bins rd /s c:\$Recycle.Bin
-ECHO   Defrag (Only for HDDs, not SSDs)
-ECHO   defrag c: /b (Boot Defrag, only for HDDs, not SSDs)
-ECHO   bcdedit /set {default} safeboot network (Boot into Safe Mode with Networking)
-ECHO   bcdedit /deletevalue {default} safeboot (Normal Boot into Windows)
-
+ECHO  11.  Full Scan of HDD chkdsk c: /r
+ECHO  12.  dism /online /cleanup-image /restorehealth
+ECHO  13.  sfc /scannow
+ECHO  14.  Empty ALL Recycle Bins rd /s c:\$Recycle.Bin
+ECHO  15.  Defrag (Only for HDDs, not SSDs)
+ECHO  16.  defrag c: /b (Boot Defrag, only for HDDs, not SSDs)
 ECHO   x. Exit
 ECHO.
 SET /P number=Choice: 
 
 IF %number%==0 GOTO Get_PC_Info
 IF %number%==1 GOTO Rename_PC
-IF %number%==4 GOTO Uninstall_Software
-
-IF %number%==15 GOTO Configure_Firefox
-IF %number%==16 GOTO Configure_Chrome
-IF %number%==17 GOTO Change_Defaults
-IF %number%==18 GOTO Device_Manager
-IF %number%==19 GOTO Get_Dell_Drivers
-IF %number%==22 GOTO Windows_Updates 
-
-IF %number%==1 GOTO Restart_Windows
-IF %number%==6 GOTO Install_Dell_Cab
-IF %number%==7 GOTO Install_Chocolatey
-IF %number%==x GOTO Menu
-
+IF %number%==2 GOTO Uninstall_Software
+IF %number%==3 GOTO Add_HCPS_Proxy
+IF %number%==4 GOTO Install_Chocolatey
+IF %number%==5 GOTO Configure_Chrome
+IF %number%==6 GOTO Configure_Firefox
+IF %number%==7 GOTO Get_Dell_Drivers
+IF %number%==8 GOTO Install_Dell_Cab
+IF %number%==9 GOTO Device_Manager
+IF %number%==10 GOTO Windows_Updates 
 IF %number%==x EXIT /B 0
 
 :End_Routine
