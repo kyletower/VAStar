@@ -15,7 +15,7 @@ REM Automatically Install Certificates
 
 
 ECHO Navigating to downloads
-cd %userprofile%\downloads\HCPS-Certificates-master\HCPS-Certificates-master
+cd %userprofile%\downloads\VAStar-master\VAStar-master
 
 ECHO Adding proxy-1.der
 
