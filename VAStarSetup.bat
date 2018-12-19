@@ -78,7 +78,7 @@ GOTO End_Routine
 
 :Install_Chocolatey
 @"%SystemRoot%\System32\WindowsPowerShell\v1.0\powershell.exe" -NoProfile -InputFormat None -ExecutionPolicy Bypass -Command "iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))" && SET "PATH=%PATH%;%ALLUSERSPROFILE%\chocolatey\bin"
-PAUSE
+
 choco install -y adobereader
 choco install -y flashplayerplugin
 choco install -y googlechrome-allusers
@@ -131,7 +131,7 @@ cd /
 md Drivers
 expand "%userprofile%\downloads\*.CAB" c:\Drivers -f:*
 cd Drivers
-for /f "tokens=*" %a in ('dir *.inf /b /s') do (pnputil ñi -a "%a\..\*.inf")
+for /f "tokens=*" %a in ('dir *.inf /b /s') do (pnputil ‚Äìi -a "%a\..\*.inf")
 GOTO End_Routine
 
 
@@ -291,10 +291,10 @@ REM Remove all apps except store from new accounts created afterwards
 REM Get-appxprovisionedpackage -online | where-object {$_.packagename -notlike '*store*'} | Remove-AppxProvisionedPackage -online
 
 REM  4. To Remove All Apps except Store from New Accounts Created Afterwards
-REM PowerShell -Command "Get-appxprovisionedpackage ñonline | where-object {$_.packagename ñnotlike '*store*'} | Remove-AppxProvisionedPackage -online"
+REM PowerShell -Command "Get-appxprovisionedpackage ‚Äìonline | where-object {$_.packagename ‚Äìnotlike '*store*'} | Remove-AppxProvisionedPackage -online"
 
 REM  5. To Remove All Apps except Store from All Current Accounts on PC
-REM PowerShell -Command "Get-AppxPackage -AllUsers | where-object {$_.name ñnotlike ì*store*î} | Remove-AppxPackage"
+REM PowerShell -Command "Get-AppxPackage -AllUsers | where-object {$_.name ‚Äìnotlike ‚Äú*store*‚Äù} | Remove-AppxPackage"
 
 @rem *** Disable Some Service ***
 sc stop DiagTrack
