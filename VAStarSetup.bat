@@ -131,7 +131,7 @@ cd /
 md Drivers
 expand "%userprofile%\downloads\*.CAB" c:\Drivers -f:*
 cd Drivers
-for /f "tokens=*" %a in ('dir *.inf /b /s') do (pnputil –i -a "%a\..\*.inf")
+for /f "tokens=*" %a in ('dir *.inf /b /s') do (pnputil -i -a "%a\..\*.inf")
 GOTO End_Routine
 
 
