@@ -2,69 +2,48 @@
 @echo off
 echo Created by Kyle Tower
 echo Updated: 05.15.2019
-REM Reference #1: https://docs.microsoft.com/en-us/dotnet/framework/tools/certmgr-exe-certificate-manager-tool
-REM Reference #2: https://stackoverflow.com/questions/23869177/import-certificate-to-trusted-root-but-not-to-personal-command-line
+rem Reference #1: https://docs.microsoft.com/en-us/dotnet/framework/tools/certmgr-exe-certificate-manager-tool
+rem Reference #2: https://stackoverflow.com/questions/23869177/import-certificate-to-trusted-root-but-not-to-personal-command-line
 
-REM Automatically Install Certificates
+rem Automatically Install Certificates
+::This will install 6 proxy certificates for Hanover County Public Schools on a Windows 7, 8, or 10 machine.
+::Install_HCPS_Certificates.bat, v1, 05.15.2019, Kyle Tower, ktower@hcps.us
+::The certificates are available for download at hcps.us/certificates
 
-
-echo Navigating to downloads
+echo Navigating to %userprofile%\downloads\VAStar-master\VAStar-master
 cd %userprofile%\downloads\VAStar-master\VAStar-master
 
-ECHO Adding proxy-1.der
-
+echo Adding proxy-1.der
 CertUtil -AddStore "Root" proxy-1.der
-ECHO.
+echo.
 
-
-
-ECHO Adding proxy-2.der
-
+echo Adding proxy-2.der
 CertUtil -AddStore "Root" proxy-2.der
+echo.
 
-ECHO.
-
-
-
-ECHO Adding proxy-3.der
-
+echo Adding proxy-3.der
 CertUtil -AddStore "Root" proxy-3.der
+echo.
 
-ECHO.
-
-
-
-ECHO Adding proxy-4.der
-
+echo Adding proxy-4.der
 CertUtil -AddStore "Root" proxy-4.der
+echo.
 
-ECHO.
-
-ECHO Adding proxy-5.der
-
+echo Adding proxy-5.der
 CertUtil -AddStore "Root" proxy-5.der
+echo.
 
-ECHO.
-
-ECHO Adding proxy-6.der
-
+echo Adding proxy-6.der
 CertUtil -AddStore "Root" proxy-6.der
+echo.
+echo.
+echo.
 
-ECHO.
-
-ECHO.
-
-ECHO.
-
-
-REM Verify Certificates
-
+echo Opening Certificate Manager so you can Verify Certificates are installed to Trusted Root
 CertMgr.msc
-REM Manage Computer Certificates > Trusted Root Certification Authorities > Certificates 
 
-REM Prompt for restart
+rem Manage Computer Certificates > Trusted Root Certification Authorities > Certificates 
+rem Prompt for restart
 
-ECHO You must restart your computer for this to take effect.
-
-
-PAUSE
+echo You may need to restart your Internet Browser or computer for this to take effect.
+pause
