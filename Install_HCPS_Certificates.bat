@@ -1,20 +1,14 @@
-@ECHO off
-
-
-REM Created by Kyle Tower
-
-REM 08.08.2018
-
-
+@title Install HCPS Certificates
+@echo off
+echo Created by Kyle Tower
+echo Updated: 05.15.2019
 REM Reference #1: https://docs.microsoft.com/en-us/dotnet/framework/tools/certmgr-exe-certificate-manager-tool
-
 REM Reference #2: https://stackoverflow.com/questions/23869177/import-certificate-to-trusted-root-but-not-to-personal-command-line
-
 
 REM Automatically Install Certificates
 
 
-ECHO Navigating to downloads
+echo Navigating to downloads
 cd %userprofile%\downloads\VAStar-master\VAStar-master
 
 ECHO Adding proxy-1.der
