@@ -129,9 +129,10 @@ ECHO any longer and the installation occurs silently. The end user will only see
 ECHO for unsigned driver. Total runtime ~ 10 - 15 minutes depending on number of driver in the CAB file.
 cd /
 md Drivers
-start cmd /k expand "%userprofile%\downloads\*.CAB" "c:\Drivers" -f:*
+expand "%userprofile%\downloads\*.CAB" "c:\Drivers" -f:*
 cd Drivers
-for /f "tokens=*" %a in ('dir *.inf /b /s') do (pnputil -i -a "%a\..\*.inf")
+REM for loops within batch files require %%variable rather than %variable
+for /f "tokens=*" %%a in ('dir *.inf /b /s') do (pnputil -i -a "%%a\..\*.inf")
 GOTO End_Routine
 
 
